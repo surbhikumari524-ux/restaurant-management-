@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TableMaster Pro - Restaurant Management & Floor POS System</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="h-full flex flex-col font-sans bg-slate-950 text-slate-100 antialiased selection:bg-amber-500 selection:text-slate-950">
+
+  <!-- Top Global Navbar -->
+  <header class="border-b border-slate-800/80 bg-slate-900/95 sticky top-0 z-30 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Logo & Restaurant Title -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-amber-500/20">
+            <i data-lucide="utensils-crossed" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-base tracking-tight text-white">TableMaster <span class="text-amber-400 font-semibold text-xs tracking-wider uppercase ml-1 px-1.5 py-0.5 rounded bg-amber-400/10 border border-amber-400/20">PRO</span></span>
+            </div>
+            <p class="text-xs text-slate-400 hidden sm:block">L'Étoile Bistro & Grill • Active Shift</p>
+          </div>
+        </div>
+
+        <!-- Center View Navigation Switcher -->
+        <nav class="hidden md:flex items-center gap-1.5 bg-slate-950/80 p-1 rounded-xl border border-slate-800">
+          <button class="nav-tab-btn flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950 transition" data-view="floor">
+            <i data-lucide="layout-grid" class="w-4 h-4"></i> Floor & Tables
+          </button>
+          <button class="nav-tab-btn flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white transition" data-view="reservations">
+            <i data-lucide="calendar" class="w-4 h-4"></i> Reservations
+          </button>
+          <button class="nav-tab-btn flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white transition" data-view="kot">
+            <i data-lucide="chef-hat" class="w-4 h-4"></i> Kitchen KOT
+          </button>
+          <button class="nav-tab-btn flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white transition" data-view="analytics">
+            <i data-lucide="bar-chart-3" class="w-4 h-4"></i> Shift Report
+          </button>
+        </nav>
+
+        <!-- Right Quick Action Bar -->
+        <div class="flex items-center gap-2">
+          <!-- Audio Toggle -->
+          <button id="soundToggleBtn" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-amber-400 border border-slate-700 transition" title="Toggle audio chime">
+            <i id="soundToggleIcon" data-lucide="volume-2" class="w-4 h-4"></i>
+          </button>
+
+          <!-- Quick Seat Walk-In Button -->
+          <button id="topQuickSeatBtn" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md shadow-amber-500/20 transition">
+            <i data-lucide="user-plus" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Seat Walk-In</span>
+          </button>
+
+          <!-- System Menu / Export Dropdown -->
+          <button id="exportReportBtn" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition" title="Export Shift Data">
+            <i data-lucide="download" class="w-4 h-4"></i>
+          </button>
+          <button id="resetDemoDataBtn" class="p-2 rounded-xl bg-slate-800 hover:bg-rose-900/60 text-slate-400 hover:text-rose-300 border border-slate-700 transition" title="Reset Demo Data">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Tab Navigation Bar (sm and down) -->
+  <div class="md:hidden flex items-center justify-around bg-slate-900 border-b border-slate-800 px-2 py-2">
+    <button class="nav-tab-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950" data-view="floor">Floor</button>
+    <button class="nav-tab-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300" data-view="reservations">Bookings</button>
+    <button class="nav-tab-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300" data-view="kot">Kitchen</button>
+    <button class="nav-tab-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300" data-view="analytics">Report</button>
+  </div>
+
+  <!-- Live Shift Metric Ticker / KPI Banner -->
+  <section class="border-b border-slate-800/80 bg-slate-900/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        
+        <!-- Occupancy Rate -->
+        <div class="glass-card rounded-xl p-2.5 flex items-center gap-3">
+          <div class="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+            <i data-lucide="pie-chart" class="w-4 h-4"></i>
+          </div>
+          <div class="truncate">
+            <span class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Occupancy</span>
+            <span id="statOccupancy" class="text-sm font-bold text-white font-mono">--</span>
+          </div>
+        </div>
+
+        <!-- Active Seated Guests -->
+        <div class="glass-card rounded-xl p-2.5 flex items-center gap-3">
+          <div class="w-9 h-9 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+            <i data-lucide="users" class="w-4 h-4"></i>
+          </div>
+          <div class="truncate">
+            <span class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Active Guests</span>
+            <span id="statActiveGuests" class="text-sm font-bold text-white font-mono">--</span>
+          </div>
+        </div>
+
+        <!-- Available Ready Tables -->
+        <div class="glass-card rounded-xl p-2.5 flex items-center gap-3">
+          <div class="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+          </div>
+          <div class="truncate">
+            <span class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Available Tables</span>
+            <span id="statAvailable" class="text-sm font-bold text-white font-mono">--</span>
+          </div>
+        </div>
+
+        <!-- Reserved Tables -->
+        <div class="glass-card rounded-xl p-2.5 flex items-center gap-3">
+          <div class="w-9 h-9 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
+            <i data-lucide="calendar" class="w-4 h-4"></i>
+          </div>
+          <div class="truncate">
+            <span class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Reserved Today</span>
+            <span id="statReserved" class="text-sm font-bold text-white font-mono">--</span>
+          </div>
+        </div>
+
+        <!-- Today's Total Shift Revenue -->
+        <div class="glass-card rounded-xl p-2.5 flex items-center gap-3 col-span-2 sm:col-span-1">
+          <div class="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+            <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+          </div>
+          <div class="truncate">
+            <span class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Shift Revenue</span>
+            <span id="statTotalRevenue" class="text-sm font-bold text-emerald-400 font-mono">--</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Workspace Area -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 overflow-y-auto">
+
+    <!-- VIEW 1: FLOOR PLAN & POS MATRIX -->
+    <section id="viewFloor" class="space-y-6">
+      
+      <!-- Section Filters & Status Toolbars -->
+      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+        
+        <!-- Dining Section Pills -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full">
+          <button class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-500 text-slate-950 section-filter-btn transition" data-section="all">
+            All Areas (18)
+          </button>
+          <button class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-400 hover:text-white section-filter-btn transition" data-section="main">
+            Main Dining (8)
+          </button>
+          <button class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-400 hover:text-white section-filter-btn transition" data-section="patio">
+            Garden Patio (4)
+          </button>
+          <button class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-400 hover:text-white section-filter-btn transition" data-section="vip">
+            VIP Lounge (2)
+          </button>
+          <button class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-400 hover:text-white section-filter-btn transition" data-section="bar">
+            Bar High Tops (4)
+          </button>
+        </div>
+
+        <!-- Filter Dropdowns & Legend -->
+        <div class="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-400 hidden sm:inline">Status:</span>
+            <select id="floorStatusFilter" class="bg-slate-800 border border-slate-700 text-white rounded-xl text-xs px-3 py-1.5 focus:outline-none focus:border-amber-400 font-medium">
+              <option value="all">All Statuses</option>
+              <option value="available">🟢 Available</option>
+              <option value="occupied">🔴 Occupied</option>
+              <option value="billing">🟣 Bill Due</option>
+              <option value="reserved">🔵 Reserved</option>
+              <option value="cleaning">⚪ Cleaning</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-400 hidden sm:inline">Capacity:</span>
+            <select id="floorCapacityFilter" class="bg-slate-800 border border-slate-700 text-white rounded-xl text-xs px-3 py-1.5 focus:outline-none focus:border-amber-400 font-medium">
+              <option value="all">Any Size</option>
+              <option value="2">2-Seater</option>
+              <option value="4">4-Seater</option>
+              <option value="6">6+ Seater</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Tables Grid Matrix -->
+      <div id="floorGridContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <!-- Dynamically rendered via app.js -->
+      </div>
+
+    </section>
+
+    <!-- VIEW 2: RESERVATIONS & BOOKINGS -->
+    <section id="viewReservations" class="hidden space-y-6">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+        <div>
+          <h2 class="text-xl font-bold text-white">Table Reservations & Waitlist</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Manage tonight's booked arrivals and designated table assignments</p>
+        </div>
+
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <div class="relative flex-1 sm:w-64">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-500"></i>
+            <input type="text" id="reservationSearchInput" placeholder="Search guest, phone, table..." class="w-full bg-slate-800 border border-slate-700 text-xs rounded-xl pl-9 pr-3 py-2 text-white focus:outline-none focus:border-amber-400">
+          </div>
+          <button id="openNewReservationModalBtn" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-900/30 transition shrink-0">
+            <i data-lucide="plus" class="w-4 h-4"></i> Book Table
+          </button>
+        </div>
+      </div>
+
+      <!-- Reservations List -->
+      <div id="reservationListContainer" class="space-y-3">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- VIEW 3: KITCHEN ORDER TICKETS (KOT) -->
+    <section id="viewKOT" class="hidden space-y-6">
+      <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <i data-lucide="flame" class="w-5 h-5 text-amber-500"></i> Kitchen Order Tickets (KOT)
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">Real-time expeditor screen for chef line and food runners</p>
+        </div>
+      </div>
+
+      <div id="kotBoardContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- VIEW 4: SHIFT ANALYTICS & SETTLED TRANSACTIONS -->
+    <section id="viewAnalytics" class="hidden space-y-6">
+      <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+        <h2 class="text-xl font-bold text-white">Shift Summary & Revenue Audit</h2>
+        <p class="text-xs text-slate-400 mt-0.5">Real-time financial performance and completed table turnovers</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800">
+          <span class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Gross Shift Revenue</span>
+          <div class="mt-2 text-3xl font-extrabold text-emerald-400 font-mono" id="analyticsGrossRevenue">$0.00</div>
+          <span class="text-xs text-slate-500 mt-1 block">Includes billed tables and active dining subtotals</span>
+        </div>
+
+        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800">
+          <span class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Tables Settled</span>
+          <div class="mt-2 text-3xl font-extrabold text-white font-mono" id="analyticsClosedCount">0</div>
+          <span class="text-xs text-slate-500 mt-1 block">Completed dine-in party settlements</span>
+        </div>
+
+        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800">
+          <span class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Average Check Size</span>
+          <div class="mt-2 text-3xl font-extrabold text-amber-400 font-mono" id="analyticsAvgCheck">$0.00</div>
+          <span class="text-xs text-slate-500 mt-1 block">Revenue per turned table check</span>
+        </div>
+      </div>
+
+      <!-- Settled transactions table -->
+      <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">
+        <div class="p-4 border-b border-slate-800">
+          <h3 class="text-sm font-bold text-white uppercase tracking-wider">Settled Table Ledger</h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead class="bg-slate-950/60 text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-4">TX ID</th>
+                <th class="py-3 px-4">Table</th>
+                <th class="py-3 px-4">Server</th>
+                <th class="py-3 px-4">Time</th>
+                <th class="py-3 px-4 text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody id="analyticsTxTableBody">
+              <!-- Dynamically rendered -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Slide-Over Table Detail Drawer (Mini POS & Table Control) -->
+  <div id="drawerBackdrop" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40 hidden transition-opacity"></div>
+  <aside id="tableDrawer" class="fixed top-0 right-0 bottom-0 w-full sm:w-[480px] bg-slate-900 border-l border-slate-800 z-50 flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl">
+    <div id="drawerBody" class="flex flex-col h-full">
+      <!-- Injected by app.js -->
+    </div>
+  </aside>
+
+  <!-- Quick Seat Walk-In Modal -->
+  <div id="quickSeatModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <i data-lucide="user-plus" class="w-5 h-5 text-amber-400"></i> Seat Walk-In Guests
+        </h3>
+        <button id="closeQuickSeatModalBtn" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Select Available Table</label>
+          <select id="qsTableSelect" class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-amber-400">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Lead Guest Name</label>
+          <input type="text" id="qsGuestName" placeholder="e.g. Michael Scott" class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-amber-400">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Party Size</label>
+            <input type="number" id="qsPartySize" value="2" min="1" max="12" class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-amber-400">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Assigned Server</label>
+            <select id="qsServerSelect" class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-amber-400">
+              <option value="Elena Vance">Elena Vance</option>
+              <option value="Marcus Chen">Marcus Chen</option>
+              <option value="Sophia Rossi">Sophia Rossi</option>
+              <option value="David Kim">David Kim</option>
+              <option value="Amara Patel">Amara Patel</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Preferences / Tags (Optional)</label>
+          <input type="text" id="qsNotes" placeholder="e.g. Birthday, Patio requested, High chair" class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-amber-400">
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+        <button id="cancelQuickSeatBtn" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-750 transition">
+          Cancel
+        </button>
+        <button id="confirmQuickSeatModalBtn" class="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-950 bg-amber-500 hover:bg-amber-400 transition flex items-center gap-1.5 shadow-lg shadow-amber-500/20">
+          <i data-lucide="check" class="w-4 h-4"></i> Seat Party
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Reservation Modal -->
+  <div id="newReservationModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <i data-lucide="calendar-plus" class="w-5 h-5 text-indigo-400"></i> New Table Reservation
+        </h3>
+        <button id="closeNewResModalBtn" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Guest Name *</label>
+          <input type="text" id="newResGuestName" placeholder="e.g. Elizabeth Bennet" class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-400">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Phone Number</label>
+            <input type="text" id="newResPhone" placeholder="+1 (555) 234-5678" class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-400">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Party Size</label>
+            <input type="number" id="newResPartySize" value="4" min="1" max="12" class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-400">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Time Slot</label>
+            <input type="time" id="newResTime" value="20:00" class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-400">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Assign Table</label>
+            <select id="newResTableSelect" class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-400">
+              <option value="T2">Table 2 (Main, 2p)</option>
+              <option value="T4">Table 4 (Main, 4p)</option>
+              <option value="T8">Table 8 (Main, 4p)</option>
+              <option value="P2">Patio 2 (Patio, 2p)</option>
+              <option value="P4">Patio 4 (Patio, 6p)</option>
+              <option value="VIP2">VIP Suite Platinum (VIP, 8p)</option>
+              <option value="B3">Bar High Top A (Bar, 4p)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Special Occasion / Dietary Notes</label>
+          <input type="text" id="newResNotes" placeholder="e.g. Anniversary dinner, quiet table, gluten allergy" class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-400">
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+        <button id="cancelNewResBtn" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-750 transition">
+          Cancel
+        </button>
+        <button id="saveNewReservationBtn" class="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 transition flex items-center gap-1.5 shadow-lg shadow-indigo-900/30">
+          <i data-lucide="check" class="w-4 h-4"></i> Confirm Booking
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Thermal Paper Receipt Modal -->
+  <div id="thermalReceiptModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="max-w-sm w-full space-y-4">
+      
+      <div id="thermalReceiptContent" class="receipt-paper p-6 rounded-t-lg">
+        <!-- Rendered by app.js -->
+      </div>
+
+      <div class="flex items-center justify-between no-print px-1">
+        <button id="closeReceiptModalBtn" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition">
+          Close
+        </button>
+        <button id="printNowBtn" class="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-2 shadow-lg shadow-amber-500/20 transition">
+          <i data-lucide="printer" class="w-4 h-4"></i> Print Receipt
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Floating Toast Notification -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 px-5 py-3 rounded-xl shadow-2xl text-white font-medium text-sm transition-all transform duration-300 z-50 flex items-center gap-2 opacity-0 translate-y-8 pointer-events-none">
+    Notification
+  </div>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

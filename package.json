@@ -1,0 +1,19 @@
+{
+  "name": "tablemaster-pro",
+  "version": "1.0.0",
+  "description": "Interactive Restaurant Floor Plan, Table Reservation & Order Management POS System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "restaurant",
+    "pos",
+    "table-management",
+    "floor-plan",
+    "reservations",
+    "kot"
+  ],
+  "author": "Antigravity",
+  "license": "MIT"
+}
